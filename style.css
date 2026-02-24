@@ -1,14 +1,24 @@
-/* OpenClaw Sync Extension Styles */
+/* OpenClaw Sync Extension v2 Styles */
 
-.openclaw-sync-settings {
-    margin-top: 10px;
+.openclaw-sync-block {
+    margin: 12px 0;
+    padding: 8px;
+    border-left: 3px solid rgba(167, 139, 250, 0.3);
+    padding-left: 12px;
+}
+
+.openclaw-sync-block h4 {
+    font-size: 0.9em;
+    color: #a78bfa;
+    margin-bottom: 6px;
 }
 
 .openclaw-sync-row {
-    margin: 8px 0;
+    margin: 6px 0;
     display: flex;
     align-items: center;
     gap: 8px;
+    flex-wrap: wrap;
 }
 
 .openclaw-sync-row label {
@@ -16,18 +26,27 @@
     align-items: center;
     gap: 6px;
     cursor: pointer;
+    font-size: 0.9em;
 }
 
-.openclaw-sync-row input[type="text"] {
+.openclaw-sync-row input[type="text"],
+.openclaw-sync-row input[type="number"] {
     flex: 1;
+    min-width: 60px;
 }
 
-.openclaw-sync-status {
+.openclaw-sync-row span {
+    font-size: 0.85em;
+    color: #888;
+}
+
+#oc_status {
     font-size: 0.85em;
     margin-left: 8px;
 }
 
-#openclaw_sync_test {
+#oc_test,
+#oc_flush {
     padding: 4px 12px;
     font-size: 0.85em;
 }
