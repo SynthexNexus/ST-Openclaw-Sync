@@ -451,6 +451,14 @@ function createSettingsUI() {
                     </div>
                 </div>
 
+                <div class="openclaw-sync-block">
+                    <h4>💾 儲存</h4>
+                    <div class="openclaw-sync-row">
+                        <button id="oc_save" class="menu_button" style="background:#2563eb;color:#fff;font-weight:600;">💾 儲存設定</button>
+                        <span id="oc_save_status"></span>
+                    </div>
+                </div>
+
             </div>
         </div>
     </div>`;
@@ -504,6 +512,32 @@ function createSettingsUI() {
     $('#oc_flush').on('click', async function () {
         await flushBuffer();
         updateBufferCount();
+    });
+
+    // Save button — explicitly save all settings
+    $('#oc_save').on('click', function () {
+        // Read all current form values into settings object
+        settings.enabled = $('#oc_enabled').is(':checked');
+        settings.syncUrl = $('#oc_url').val() || DEFAULT_SYNC_URL;
+        settings.realtimeSync = $('#oc_realtime').is(':checked');
+        settings.fullConversationSync = $('#oc_fullsync').is(':checked');
+        settings.idleTimeoutMinutes = parseInt($('#oc_idle').val()) || 5;
+        settings.offlineBuffer = $('#oc_buffer').is(':checked');
+        settings.maxBufferSize = parseInt($('#oc_bufmax').val()) || 100;
+        settings.dedup = $('#oc_dedup').is(':checked');
+        settings.showNotifications = $('#oc_notify').is(':checked');
+        settings.showErrors = $('#oc_errors').is(':checked');
+
+        // Persist
+        SillyTavern.getContext().saveSettingsDebounced();
+
+        // Visual feedback
+        const st = $('#oc_save_status');
+        st.text('✅ 已儲存！').css('color', '#34d399');
+        toastr.success('設定已儲存', 'OpenClaw Sync', { timeOut: 2000 });
+        setTimeout(() => st.text(''), 3000);
+
+        log('💾 Settings saved manually');
     });
 }
 
