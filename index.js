@@ -466,7 +466,7 @@ function createSettingsUI() {
     $('#extensions_settings2').append(html);
 
     // ─── Bind all settings ───
-    const save = () => SillyTavern.getContext().saveSettingsDebounced();
+    const save = () => { if (typeof saveSettingsDebounced === 'function') saveSettingsDebounced(); };
 
     $('#oc_enabled').on('change', function () { settings.enabled = this.checked; save(); });
     $('#oc_url').on('input', function () { settings.syncUrl = this.value || DEFAULT_SYNC_URL; save(); });
@@ -529,7 +529,7 @@ function createSettingsUI() {
         settings.showErrors = $('#oc_errors').is(':checked');
 
         // Persist
-        SillyTavern.getContext().saveSettingsDebounced();
+        if (typeof saveSettingsDebounced === 'function') saveSettingsDebounced();
 
         // Visual feedback
         const st = $('#oc_save_status');
