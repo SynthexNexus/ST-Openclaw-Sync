@@ -375,7 +375,7 @@ function createSettingsUI() {
     <div id="openclaw-sync-settings">
         <div class="inline-drawer">
             <div class="inline-drawer-toggle inline-drawer-header">
-                <b>🧠 OpenClaw Memory Sync v2</b>
+                <b>🧠 OpenClaw Memory Sync v2.1.2</b>
                 <div class="inline-drawer-icon fa-solid fa-circle-chevron-down down"></div>
             </div>
             <div class="inline-drawer-content">
