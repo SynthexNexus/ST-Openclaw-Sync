@@ -1,4 +1,4 @@
-/* OpenClaw Memory Sync v2 — SillyTavern Extension
+/* OpenClaw Memory Sync v2.2.4 — SillyTavern Extension
  *
  * Features:
  * - Real-time sync: POST each message turn as it happens
@@ -375,7 +375,7 @@ function createSettingsUI() {
     <div id="openclaw-sync-settings">
         <div class="inline-drawer">
             <div class="inline-drawer-toggle inline-drawer-header">
-                <b>🧠 OpenClaw Memory Sync v2.1.2</b>
+                <b>🧠 OpenClaw Memory Sync v2.2.4</b>
                 <div class="inline-drawer-icon fa-solid fa-circle-chevron-down down"></div>
             </div>
             <div class="inline-drawer-content">
