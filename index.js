@@ -1,4 +1,4 @@
-/* OpenClaw Memory Sync v2.2.4 — SillyTavern Extension
+/* OpenClaw Memory Sync v2.2.6 — SillyTavern Extension
  *
  * Features:
  * - Real-time sync: POST each message turn as it happens
@@ -11,6 +11,7 @@
 // ─── Configuration ─────────────────────────────────────────────
 const EXTENSION_NAME = 'openclaw-sync';
 const DEFAULT_SYNC_URL = 'http://10.0.0.172:4000/st-sync';
+const SETTINGS_STORAGE_KEY = 'openclaw_sync_settings';
 
 const defaultSettings = {
     enabled: true,
@@ -57,7 +58,29 @@ function getSettings() {
     for (const [k, v] of Object.entries(defaultSettings)) {
         if (s[k] === undefined) s[k] = v;
     }
+    // Load persisted values from localStorage (reliable across reloads)
+    try {
+        const stored = localStorage.getItem(SETTINGS_STORAGE_KEY);
+        if (stored) {
+            const parsed = JSON.parse(stored);
+            for (const [k, v] of Object.entries(parsed)) {
+                s[k] = v;
+            }
+        }
+    } catch (_) { }
     return s;
+}
+
+function persistSettings(s) {
+    try {
+        // Save a copy to localStorage so values survive page reload
+        const toSave = {};
+        for (const k of Object.keys(defaultSettings)) {
+            if (s[k] !== undefined) toSave[k] = s[k];
+        }
+        localStorage.setItem(SETTINGS_STORAGE_KEY, JSON.stringify(toSave));
+    } catch (_) { }
+    if (typeof saveSettingsDebounced === 'function') saveSettingsDebounced();
 }
 
 function log(msg) {
@@ -375,7 +398,7 @@ function createSettingsUI() {
     <div id="openclaw-sync-settings">
         <div class="inline-drawer">
             <div class="inline-drawer-toggle inline-drawer-header">
-                <b>🧠 OpenClaw Memory Sync v2.2.5</b>
+                <b>🧠 OpenClaw Memory Sync v2.2.6</b>
                 <div class="inline-drawer-icon fa-solid fa-circle-chevron-down down"></div>
             </div>
             <div class="inline-drawer-content">
@@ -467,18 +490,18 @@ function createSettingsUI() {
     $('#extensions_settings2').append(html);
 
     // ─── Bind all settings ───
-    const save = () => { if (typeof saveSettingsDebounced === 'function') saveSettingsDebounced(); };
+    const save = () => persistSettings(getSettings());
 
-    $('#oc_enabled').on('change', function () { settings.enabled = this.checked; save(); });
-    $('#oc_url').on('input', function () { settings.syncUrl = this.value || DEFAULT_SYNC_URL; save(); });
-    $('#oc_realtime').on('change', function () { settings.realtimeSync = this.checked; save(); });
-    $('#oc_fullsync').on('change', function () { settings.fullConversationSync = this.checked; save(); });
-    $('#oc_idle').on('input', function () { settings.idleTimeoutMinutes = parseInt(this.value) || 5; save(); });
-    $('#oc_buffer').on('change', function () { settings.offlineBuffer = this.checked; save(); });
-    $('#oc_bufmax').on('input', function () { settings.maxBufferSize = parseInt(this.value) || 100; save(); });
-    $('#oc_dedup').on('change', function () { settings.dedup = this.checked; save(); });
-    $('#oc_notify').on('change', function () { settings.showNotifications = this.checked; save(); });
-    $('#oc_errors').on('change', function () { settings.showErrors = this.checked; save(); });
+    $('#oc_enabled').on('change', function () { getSettings().enabled = this.checked; save(); });
+    $('#oc_url').on('input', function () { getSettings().syncUrl = this.value || DEFAULT_SYNC_URL; save(); });
+    $('#oc_realtime').on('change', function () { getSettings().realtimeSync = this.checked; save(); });
+    $('#oc_fullsync').on('change', function () { getSettings().fullConversationSync = this.checked; save(); });
+    $('#oc_idle').on('input', function () { getSettings().idleTimeoutMinutes = parseInt(this.value) || 5; save(); });
+    $('#oc_buffer').on('change', function () { getSettings().offlineBuffer = this.checked; save(); });
+    $('#oc_bufmax').on('input', function () { getSettings().maxBufferSize = parseInt(this.value) || 100; save(); });
+    $('#oc_dedup').on('change', function () { getSettings().dedup = this.checked; save(); });
+    $('#oc_notify').on('change', function () { getSettings().showNotifications = this.checked; save(); });
+    $('#oc_errors').on('change', function () { getSettings().showErrors = this.checked; save(); });
 
     // Update buffer count display
     const updateBufferCount = () => {
@@ -549,10 +572,8 @@ function createSettingsUI() {
         // Update the window reference
         window.extension_settings[EXTENSION_NAME] = currentSettings;
 
-        // Persist to disk
-        if (typeof saveSettingsDebounced === 'function') {
-            saveSettingsDebounced();
-        }
+        // Persist to disk and localStorage
+        persistSettings(currentSettings);
 
         // Visual feedback
         const st = $('#oc_save_status');
