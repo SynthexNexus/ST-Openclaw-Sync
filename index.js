@@ -375,7 +375,7 @@ function createSettingsUI() {
     <div id="openclaw-sync-settings">
         <div class="inline-drawer">
             <div class="inline-drawer-toggle inline-drawer-header">
-                <b>🧠 OpenClaw Memory Sync v2.2.4</b>
+                <b>🧠 OpenClaw Memory Sync v2.2.5</b>
                 <div class="inline-drawer-icon fa-solid fa-circle-chevron-down down"></div>
             </div>
             <div class="inline-drawer-content">
@@ -531,20 +531,28 @@ function createSettingsUI() {
 
     // Save button — explicitly save all settings
     $('#oc_save').on('click', function () {
-        // Read all current form values into settings object
-        settings.enabled = $('#oc_enabled').is(':checked');
-        settings.syncUrl = $('#oc_url').val() || DEFAULT_SYNC_URL;
-        settings.realtimeSync = $('#oc_realtime').is(':checked');
-        settings.fullConversationSync = $('#oc_fullsync').is(':checked');
-        settings.idleTimeoutMinutes = parseInt($('#oc_idle').val()) || 5;
-        settings.offlineBuffer = $('#oc_buffer').is(':checked');
-        settings.maxBufferSize = parseInt($('#oc_bufmax').val()) || 100;
-        settings.dedup = $('#oc_dedup').is(':checked');
-        settings.showNotifications = $('#oc_notify').is(':checked');
-        settings.showErrors = $('#oc_errors').is(':checked');
+        // Get fresh reference to settings
+        const currentSettings = getSettings();
 
-        // Persist
-        if (typeof saveSettingsDebounced === 'function') saveSettingsDebounced();
+        // Read all current form values into settings object
+        currentSettings.enabled = $('#oc_enabled').is(':checked');
+        currentSettings.syncUrl = $('#oc_url').val() || DEFAULT_SYNC_URL;
+        currentSettings.realtimeSync = $('#oc_realtime').is(':checked');
+        currentSettings.fullConversationSync = $('#oc_fullsync').is(':checked');
+        currentSettings.idleTimeoutMinutes = parseInt($('#oc_idle').val()) || 5;
+        currentSettings.offlineBuffer = $('#oc_buffer').is(':checked');
+        currentSettings.maxBufferSize = parseInt($('#oc_bufmax').val()) || 100;
+        currentSettings.dedup = $('#oc_dedup').is(':checked');
+        currentSettings.showNotifications = $('#oc_notify').is(':checked');
+        currentSettings.showErrors = $('#oc_errors').is(':checked');
+
+        // Update the window reference
+        window.extension_settings[EXTENSION_NAME] = currentSettings;
+
+        // Persist to disk
+        if (typeof saveSettingsDebounced === 'function') {
+            saveSettingsDebounced();
+        }
 
         // Visual feedback
         const st = $('#oc_save_status');
