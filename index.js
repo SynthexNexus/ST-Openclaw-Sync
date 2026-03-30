@@ -444,6 +444,7 @@ function createSettingsUI() {
                     <div class="openclaw-sync-row">
                         <button id="oc_test" class="menu_button">測試連線</button>
                         <button id="oc_flush" class="menu_button">補送離線訊息</button>
+                        <button id="oc_sync_now" class="menu_button">同步完整對話</button>
                         <span id="oc_status"></span>
                     </div>
                     <div class="openclaw-sync-row">
@@ -472,9 +473,9 @@ function createSettingsUI() {
     $('#oc_url').on('input', function () { settings.syncUrl = this.value || DEFAULT_SYNC_URL; save(); });
     $('#oc_realtime').on('change', function () { settings.realtimeSync = this.checked; save(); });
     $('#oc_fullsync').on('change', function () { settings.fullConversationSync = this.checked; save(); });
-    $('#oc_idle').on('change', function () { settings.idleTimeoutMinutes = parseInt(this.value) || 5; save(); });
+    $('#oc_idle').on('input', function () { settings.idleTimeoutMinutes = parseInt(this.value) || 5; save(); });
     $('#oc_buffer').on('change', function () { settings.offlineBuffer = this.checked; save(); });
-    $('#oc_bufmax').on('change', function () { settings.maxBufferSize = parseInt(this.value) || 100; save(); });
+    $('#oc_bufmax').on('input', function () { settings.maxBufferSize = parseInt(this.value) || 100; save(); });
     $('#oc_dedup').on('change', function () { settings.dedup = this.checked; save(); });
     $('#oc_notify').on('change', function () { settings.showNotifications = this.checked; save(); });
     $('#oc_errors').on('change', function () { settings.showErrors = this.checked; save(); });
@@ -512,6 +513,20 @@ function createSettingsUI() {
     $('#oc_flush').on('click', async function () {
         await flushBuffer();
         updateBufferCount();
+    });
+
+    // Sync now button — manually trigger full conversation sync
+    $('#oc_sync_now').on('click', async function () {
+        const st = $('#oc_status');
+        st.text('同步中...').css('color', '#888');
+        try {
+            await syncFullConversation();
+            st.text('✅ 已同步').css('color', '#34d399');
+            updateBufferCount();
+            setTimeout(() => st.text(''), 3000);
+        } catch (err) {
+            st.text(`❌ ${err.message}`).css('color', '#ef4444');
+        }
     });
 
     // Save button — explicitly save all settings
